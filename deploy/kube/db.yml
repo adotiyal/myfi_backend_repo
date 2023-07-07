@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: myfi-backend
+  name: myfi-backend-db
+spec:
+  selector:
+    matchLabels:
+      app: myfi-backend-db
+  template:
+    metadata:
+      labels:
+        app: myfi-backend-db
+    spec:
+      containers:
+      - name: database
+        image: postgres:13.8-bullseye
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "200m"
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "myfi_backend"
+        - name: POSTGRES_USER
+          value: "myfi_backend"
+        - name: POSTGRES_DB
+          value: "myfi_backend"
+        ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: myfi-backend
+  name: "myfi-backend-db-service"
+spec:
+  selector:
+    app: myfi-backend-db
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: myfi-backend
+  name: myfi-backend-migrator
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: migrator
+        image: myfi_backend:latest
+        command:
+        - "alembic"
+        - "upgrade"
+        - "head"
+        resources:
+          limits:
+            memory: "200Mi"
+            cpu: "250m"
+        env:
+        - name: "MYFI_BACKEND_DB_HOST"
+          value: "myfi-backend-db-service"
+      initContainers:
+      - name: wait-for-db
+        image: toschneck/wait-for-it:latest
+        command: ["./wait-for-it.sh", "-t", "60", "myfi-backend-db-service:5432"]
+      restartPolicy: Never
+
+---

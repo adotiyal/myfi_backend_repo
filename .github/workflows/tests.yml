@@ -1,0 +1,106 @@
+name: Testing myfi_backend
+
+on: push
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install deps
+        uses: knowsuchagency/poetry-install@v1
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+      - name: Run black check
+        run: poetry run black --check .
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install deps
+        uses: knowsuchagency/poetry-install@v1
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+      - name: Run flake8 check
+        run: poetry run flake8 --count .
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install deps
+        uses: knowsuchagency/poetry-install@v1
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+      - name: Run mypy check
+        run: poetry run mypy .
+  pytest:
+    runs-on: ubuntu-latest
+    services:
+      myfi_backend-db:
+        image: postgres:13.8-bullseye
+        env:
+          POSTGRES_PASSWORD: myfi_backend
+          POSTGRES_USER: myfi_backend
+          POSTGRES_DB: myfi_backend
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 5432:5432
+
+      myfi_backend-zookeeper:
+        image: "bitnami/zookeeper:3.7.1"
+        env:
+          ALLOW_ANONYMOUS_LOGIN: "yes"
+          ZOO_LOG_LEVEL: "ERROR"
+        options: >-
+          --health-cmd="zkServer.sh status"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=8
+
+      myfi_backend-kafka:
+        image: bitnami/kafka:3.2.0
+        env:
+          KAFKA_BROKER_ID: "1"
+          ALLOW_PLAINTEXT_LISTENER: "yes"
+          KAFKA_CFG_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
+          KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+          KAFKA_CFG_ZOOKEEPER_CONNECT: "myfi_backend-zookeeper:2181"
+        options: >-
+          --health-cmd="kafka-topics.sh --list --bootstrap-server localhost:9092"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=8
+        ports:
+          - 9092:9092
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install deps
+        uses: knowsuchagency/poetry-install@v1
+        env:
+          POETRY_VIRTUALENVS_CREATE: false
+      - name: Run pytest check
+        run: poetry run pytest -vv --cov="myfi_backend" .
+        env:
+          MYFI_BACKEND_HOST: "0.0.0.0"
+          MYFI_BACKEND_DB_HOST: localhost
+          MYFI_BACKEND_KAFKA_BOOTSTRAP_SERVERS: '["localhost:9092"]'

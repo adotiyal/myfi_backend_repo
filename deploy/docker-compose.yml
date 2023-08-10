@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: "myfi_backend"
       POSTGRES_DB: "myfi_backend"
     volumes:
-      - myfi_backend-db-data:/var/lib/postgresql/data
+    - myfi_backend-db-data:/var/lib/postgresql/data
     restart: always
     healthcheck:
       test: pg_isready -U myfi_backend
@@ -54,14 +54,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       ALLOW_PLAINTEXT_LISTENER: "yes"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "kafka-topics.sh",
-          "--list",
-          "--zookeeper",
-          "myfi_backend-zookeeper:2181"
-        ]
+      test: ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "myfi_backend-zookeeper:2181"]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -91,19 +84,19 @@ services:
     image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
     restart: always
     env_file:
-      - .env
+    - .env
     ports:
-      - ${MYFI_BACKEND_PORT:-8000}:8000
+    - ${MYFI_BACKEND_PORT:-8000}:8000
     labels:
       # Enables traefik for this container.
-      - traefik.enable=true
-      - traefik.http.routers.myfi_backend.rule=Host(`${MYFI_BACKEND_TRAEFIK_HOST:-myfi_backend.localhost}`)
-      - traefik.http.routers.myfi_backend.entrypoints=http
-      - traefik.http.routers.myfi_backend.service=myfi_backend
-      - traefik.http.services.myfi_backend.loadbalancer.server.port=${MYFI_BACKEND_PORT:-8000}
+    - traefik.enable=true
+    - traefik.http.routers.myfi_backend.rule=Host(`${MYFI_BACKEND_TRAEFIK_HOST:-myfi_backend.localhost}`)
+    - traefik.http.routers.myfi_backend.entrypoints=http
+    - traefik.http.routers.myfi_backend.service=myfi_backend
+    - traefik.http.services.myfi_backend.loadbalancer.server.port=${MYFI_BACKEND_PORT:-8000}
     networks:
-      - default
-      - traefik-shared
+    - default
+    - traefik-shared
     depends_on:
       db:
         condition: service_healthy

@@ -31,7 +31,7 @@ docker-compose -f deploy/docker-compose.yml --project-directory . up --build
 You can stop the project with docker using this command:
 
 ```bash
-docker-compose -f deploy/docker-compose.yml stop
+docker-compose -f deploy/docker-compose.yml --project-directory . stop
 ```
 
 If you want to develop in docker with autoreload add `-f deploy/docker-compose.dev.yml` to your docker command.

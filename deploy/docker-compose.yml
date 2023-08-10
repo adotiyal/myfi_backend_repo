@@ -1,6 +1,88 @@
 version: '3.9'
 
 services:
+  db:
+    image: postgres:13.8-bullseye
+    hostname: myfi_backend-db
+    environment:
+      POSTGRES_PASSWORD: "myfi_backend"
+      POSTGRES_USER: "myfi_backend"
+      POSTGRES_DB: "myfi_backend"
+    volumes:
+      - myfi_backend-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U myfi_backend
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: bitnami/redis:6.2.5
+    hostname: "myfi_backend-redis"
+    restart: always
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  zookeeper:
+    image: "zookeeper:latest"
+    hostname: "myfi_backend-zookeeper"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOO_LOG_LEVEL: "ERROR"
+    healthcheck:
+      test: zkServer.sh status
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: "myfi_backend-kafka"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "myfi_backend-zookeeper:2181"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://myfi_backend-kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "kafka-topics.sh",
+          "--list",
+          "--zookeeper",
+          "myfi_backend-zookeeper:2181"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  migrator:
+    image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
+    restart: "no"
+    command: alembic upgrade head
+    environment:
+      MYFI_BACKEND_DB_HOST: myfi_backend-db
+      MYFI_BACKEND_DB_PORT: 5432
+      MYFI_BACKEND_DB_USER: myfi_backend
+      MYFI_BACKEND_DB_PASS: myfi_backend
+      MYFI_BACKEND_DB_BASE: myfi_backend
+    depends_on:
+      db:
+        condition: service_healthy
+
   api:
     build:
       context: .
@@ -38,78 +120,6 @@ services:
       MYFI_BACKEND_DB_BASE: myfi_backend
       MYFI_BACKEND_REDIS_HOST: myfi_backend-redis
       TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["myfi_backend-kafka:9092"]'
-
-  db:
-    image: postgres:13.8-bullseye
-    hostname: myfi_backend-db
-    environment:
-      POSTGRES_PASSWORD: "myfi_backend"
-      POSTGRES_USER: "myfi_backend"
-      POSTGRES_DB: "myfi_backend"
-    volumes:
-      - myfi_backend-db-data:/var/lib/postgresql/data
-    restart: always
-    healthcheck:
-      test: pg_isready -U myfi_backend
-      interval: 2s
-      timeout: 3s
-      retries: 40
-
-  migrator:
-    image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
-    restart: "no"
-    command: alembic upgrade head
-    environment:
-      MYFI_BACKEND_DB_HOST: myfi_backend-db
-      MYFI_BACKEND_DB_PORT: 5432
-      MYFI_BACKEND_DB_USER: myfi_backend
-      MYFI_BACKEND_DB_PASS: myfi_backend
-      MYFI_BACKEND_DB_BASE: myfi_backend
-    depends_on:
-      db:
-        condition: service_healthy
-
-  redis:
-    image: bitnami/redis:6.2.5
-    hostname: "myfi_backend-redis"
-    restart: always
-    environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
-    healthcheck:
-      test: redis-cli ping
-      interval: 1s
-      timeout: 3s
-      retries: 50
-
-  zookeeper:
-    image: "bitnami/zookeeper:3.7.1"
-    hostname: "myfi_backend-zookeeper"
-    environment:
-      ALLOW_ANONYMOUS_LOGIN: "yes"
-      ZOO_LOG_LEVEL: "ERROR"
-    healthcheck:
-      test: zkServer.sh status
-      interval: 1s
-      timeout: 3s
-      retries: 30
-
-  kafka:
-    image: "bitnami/kafka:3.2.0"
-    hostname: "myfi_backend-kafka"
-    environment:
-      KAFKA_BROKER_ID: "1"
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-      KAFKA_CFG_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
-      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://myfi_backend-kafka:9092"
-      KAFKA_CFG_ZOOKEEPER_CONNECT: "myfi_backend-zookeeper:2181"
-    healthcheck:
-      test: kafka-topics.sh --list --bootstrap-server localhost:9092
-      interval: 1s
-      timeout: 3s
-      retries: 30
-    depends_on:
-      zookeeper:
-        condition: service_healthy
 
 volumes:
   myfi_backend-db-data:

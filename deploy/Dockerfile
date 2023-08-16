@@ -1,6 +1,7 @@
 FROM python:3.9.6-slim-buster as prod
 RUN apt-get update && apt-get install -y \
   gcc \
+  && apt-get install -y netcat \
   && rm -rf /var/lib/apt/lists/*
 
 

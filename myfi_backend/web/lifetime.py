@@ -24,7 +24,7 @@ from myfi_backend.services.redis.lifetime import init_redis, shutdown_redis
 from myfi_backend.settings import settings
 
 
-def _setup_db(app: FastAPI) -> None:  # pragma: no cover
+def _setup_db(app: FastAPI) -> None:
     """
     Creates connection to the database.
 
@@ -43,7 +43,7 @@ def _setup_db(app: FastAPI) -> None:  # pragma: no cover
     app.state.db_session_factory = session_factory
 
 
-def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
+def setup_opentelemetry(app: FastAPI) -> None:
     """
     Enables opentelemetry instrumentation.
 
@@ -96,7 +96,7 @@ def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     set_tracer_provider(tracer_provider=tracer_provider)
 
 
-def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
+def stop_opentelemetry(app: FastAPI) -> None:
     """
     Disables opentelemetry instrumentation.
 
@@ -110,7 +110,7 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     SQLAlchemyInstrumentor().uninstrument()
 
 
-def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
+def setup_prometheus(app: FastAPI) -> None:
     """
     Enables prometheus integration.
 
@@ -123,7 +123,7 @@ def setup_prometheus(app: FastAPI) -> None:  # pragma: no cover
 
 def register_startup_event(
     app: FastAPI,
-) -> Callable[[], Awaitable[None]]:  # pragma: no cover
+) -> Callable[[], Awaitable[None]]:
     """
     Actions to run on application startup.
 
@@ -148,7 +148,7 @@ def register_startup_event(
 
 def register_shutdown_event(
     app: FastAPI,
-) -> Callable[[], Awaitable[None]]:  # pragma: no cover
+) -> Callable[[], Awaitable[None]]:
     """
     Actions to run on application's shutdown.
 

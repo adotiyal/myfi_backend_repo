@@ -35,6 +35,10 @@ opentelemetry-instrumentation-redis = "^0.36b0"
 opentelemetry-instrumentation-sqlalchemy = "^0.36b0"
 loguru = "^0.6.0"
 aiokafka = "^0.8.0"
+fastapi-shell = "^0.1.3"
+pytest = "^7.2.1"
+fakeredis = "^2.5.0"
+httpx = "^0.23.3"
 
 
 [tool.poetry.dev-dependencies]

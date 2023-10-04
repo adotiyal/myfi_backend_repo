@@ -11,6 +11,8 @@ services:
     volumes:
     - myfi_backend-db-data:/var/lib/postgresql/data
     restart: always
+    ports:
+    - 5432:5432
     healthcheck:
       test: pg_isready -U myfi_backend
       interval: 10s

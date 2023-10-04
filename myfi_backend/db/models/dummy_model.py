@@ -1,5 +1,5 @@
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.sql.sqltypes import String
 
 from myfi_backend.db.base import Base
 

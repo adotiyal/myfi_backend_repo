@@ -70,7 +70,6 @@ ignore =
   DJ10,
   ; Model should define verbose_name_plural in its Meta inner class
   DJ11,
-  WPS403,
   ; Found mutable module constant.
   WPS407,
   ; Found nested function

@@ -31,47 +31,6 @@ services:
       timeout: 10s
       retries: 5
 
-  zookeeper:
-    image: "zookeeper:3.8.2-temurin"
-    hostname: "myfi_backend-zookeeper"
-    environment:
-      ALLOW_ANONYMOUS_LOGIN: "yes"
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOO_LOG_LEVEL: "ERROR"
-    healthcheck:
-      test: zkServer.sh status
-      interval: 10s
-      timeout: 10s
-      retries: 5
-
-  kafka:
-    image: confluentinc/cp-kafka:7.2.6
-    hostname: "myfi_backend-kafka"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "myfi_backend-zookeeper:2181"
-      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://myfi_backend-kafka:9092"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      ALLOW_PLAINTEXT_LISTENER: "yes"
-    healthcheck:
-      #test: nc -vz myfi_backend-kafka 9092
-      test: kafka-topics --create --if-not-exists --bootstrap-server myfi_backend-kafka:9092 --topic test-topic --partitions 1 --replication-factor 1
-      #test:
-      #  [
-      #   "CMD",
-      #    "kafka-topics",
-      #    "--list",
-      #    "--bootstrap-server",
-      #    "myfi_backend-kafka:9092"
-      #  ]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    depends_on:
-      zookeeper:
-        condition: service_healthy
 
   migrator:
     image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
@@ -94,7 +53,8 @@ services:
       target: prod
     image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
     restart: always
-    command: bash -c 'ss=1; while ((ss)); do nc -vz myfi_backend-kafka 9092; ss=$?; sleep 2; done;  echo kafka is up; /usr/local/bin/python -m myfi_backend'
+    #command: bash -c 'ss=1; while ((ss)); do nc -vz myfi_backend-kafka 9092; ss=$?; sleep 2; done;  echo kafka is up; /usr/local/bin/python -m myfi_backend'
+    command: /usr/local/bin/python -m myfi_backend
     env_file:
     - .env
     ports:
@@ -114,8 +74,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      #kafka:
-      #  condition: service_healthy
     environment:
       MYFI_BACKEND_HOST: 0.0.0.0
       MYFI_BACKEND_DB_HOST: myfi_backend-db
@@ -124,7 +82,7 @@ services:
       MYFI_BACKEND_DB_PASS: myfi_backend
       MYFI_BACKEND_DB_BASE: myfi_backend
       MYFI_BACKEND_REDIS_HOST: myfi_backend-redis
-      TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["myfi_backend-kafka:9092"]'
+      #TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["myfi_backend-kafka:9092"]'
 
 volumes:
   myfi_backend-db-data:

@@ -19,7 +19,6 @@ from prometheus_fastapi_instrumentator.instrumentation import (
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from myfi_backend.services.kafka.lifetime import init_kafka, shutdown_kafka
 from myfi_backend.services.redis.lifetime import init_redis, shutdown_redis
 from myfi_backend.settings import settings
 
@@ -139,7 +138,6 @@ def register_startup_event(
         _setup_db(app)
         setup_opentelemetry(app)
         init_redis(app)
-        await init_kafka(app)
         setup_prometheus(app)
         pass  # noqa: WPS420
 
@@ -161,7 +159,6 @@ def register_shutdown_event(
         await app.state.db_engine.dispose()
 
         await shutdown_redis(app)
-        await shutdown_kafka(app)
         stop_opentelemetry(app)
         pass  # noqa: WPS420
 

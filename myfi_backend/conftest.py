@@ -1,8 +1,6 @@
 from typing import Any, AsyncGenerator
-from unittest.mock import Mock
 
 import pytest
-from aiokafka import AIOKafkaProducer
 from fakeredis import FakeServer
 from fakeredis.aioredis import FakeConnection
 from fastapi import FastAPI
@@ -17,8 +15,6 @@ from sqlalchemy.ext.asyncio import (
 
 from myfi_backend.db.dependencies import get_db_session
 from myfi_backend.db.utils import create_database, drop_database
-from myfi_backend.services.kafka.dependencies import get_kafka_producer
-from myfi_backend.services.kafka.lifetime import init_kafka, shutdown_kafka
 from myfi_backend.services.redis.dependency import get_redis_pool
 from myfi_backend.settings import settings
 from myfi_backend.web.application import get_app
@@ -90,19 +86,6 @@ async def dbsession(
 
 
 @pytest.fixture
-async def test_kafka_producer() -> AsyncGenerator[AIOKafkaProducer, None]:
-    """
-    Creates kafka's producer.
-
-    :yields: kafka's producer.
-    """
-    app_mock = Mock()
-    await init_kafka(app_mock)
-    yield app_mock.state.kafka_producer
-    await shutdown_kafka(app_mock)
-
-
-@pytest.fixture
 async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
     """
     Get instance of a fake redis.
@@ -122,7 +105,6 @@ async def fake_redis_pool() -> AsyncGenerator[ConnectionPool, None]:
 def fastapi_app(
     dbsession: AsyncSession,
     fake_redis_pool: ConnectionPool,
-    test_kafka_producer: AIOKafkaProducer,
 ) -> FastAPI:
     """
     Fixture for creating FastAPI app.
@@ -132,7 +114,6 @@ def fastapi_app(
     application = get_app()
     application.dependency_overrides[get_db_session] = lambda: dbsession
     application.dependency_overrides[get_redis_pool] = lambda: fake_redis_pool
-    application.dependency_overrides[get_kafka_producer] = lambda: test_kafka_producer
     return application  # noqa: WPS331
 
 

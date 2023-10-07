@@ -1,7 +1,7 @@
 import enum
 from pathlib import Path
 from tempfile import gettempdir
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseSettings
 from yarl import URL
@@ -66,8 +66,6 @@ class Settings(BaseSettings):
     # Grpc endpoint for opentelemetry.
     # E.G. http://localhost:4317
     opentelemetry_endpoint: Optional[str] = None
-
-    kafka_bootstrap_servers: List[str] = ["myfi_backend-kafka:9092"]
 
     @property
     def db_url(self) -> URL:

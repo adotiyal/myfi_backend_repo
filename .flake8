@@ -52,6 +52,10 @@ ignore =
   WPS100,
   ; Found too many methods
   WPS214,
+  ; Found too many await expressions
+  WPS217,
+  ; Found too many `assert` statements
+  WPS218,
   ; Found too long ``try`` body
   WPS229,
   ; Found unpythonic getter or setter
@@ -68,6 +72,10 @@ ignore =
   DJ11,
   ; Found mutable module constant.
   WPS407,
+  ; Found nested function
+  WPS430,
+  ; Found magic number
+  WPS432,
   ; Found too many empty lines in `def`
   WPS473,
 

@@ -1,6 +1,6 @@
 name: Testing myfi_backend
 
-on: push
+on: pull_request
 
 jobs:
   black:
@@ -10,9 +10,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: "3.9"
+        python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run black check
@@ -24,9 +27,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: "3.9"
+        python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run flake8 check
@@ -38,9 +44,12 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: "3.9"
+        python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run mypy check
@@ -62,40 +71,17 @@ jobs:
         ports:
         - 5432:5432
 
-      myfi_backend-zookeeper:
-        image: "bitnami/zookeeper:3.7.1"
-        env:
-          ALLOW_ANONYMOUS_LOGIN: "yes"
-          ZOO_LOG_LEVEL: "ERROR"
-        options: >-
-          --health-cmd="zkServer.sh status"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=8
-
-      myfi_backend-kafka:
-        image: bitnami/kafka:3.2.0
-        env:
-          KAFKA_BROKER_ID: "1"
-          ALLOW_PLAINTEXT_LISTENER: "yes"
-          KAFKA_CFG_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
-          KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
-          KAFKA_CFG_ZOOKEEPER_CONNECT: "myfi_backend-zookeeper:2181"
-        options: >-
-          --health-cmd="kafka-topics.sh --list --bootstrap-server localhost:9092"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=8
-        ports:
-        - 9092:9092
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: "3.9"
+        python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run pytest check
@@ -103,4 +89,3 @@ jobs:
       env:
         MYFI_BACKEND_HOST: "0.0.0.0"
         MYFI_BACKEND_DB_HOST: localhost
-        MYFI_BACKEND_KAFKA_BOOTSTRAP_SERVERS: '["localhost:9092"]'

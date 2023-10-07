@@ -149,13 +149,18 @@ docker save --output myfi_backend.tar myfi_backend:latest
 
 ## Migrations
 
+Migration service will migrate db to latest state.
+
 If you want to migrate your database, you should run following commands:
 ```bash
+# To generate migration file for db update:
+alembic revision --autogenerate --m "Add NewModel to"
+
 # To run all migrations until the migration with revision_id.
 alembic upgrade "<revision_id>"
 
 # To perform all pending migrations.
-alembic upgrade "head"
+alembic upgrade head
 ```
 
 ### Reverting migrations

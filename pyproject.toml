@@ -11,7 +11,7 @@ maintainers = [
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11.4"
 fastapi = "^0.89.1"
 uvicorn = { version = "^0.20.0", extras = ["standard"] }
 pydantic = {version = "^1.10.4", extras = ["dotenv"]}
@@ -34,8 +34,7 @@ opentelemetry-instrumentation-fastapi = "^0.36b0"
 opentelemetry-instrumentation-redis = "^0.36b0"
 opentelemetry-instrumentation-sqlalchemy = "^0.36b0"
 loguru = "^0.6.0"
-aiokafka = "^0.8.0"
-
+# aiokafka = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2.1"

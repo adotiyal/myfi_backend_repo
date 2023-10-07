@@ -1,6 +1,6 @@
 name: Testing myfi_backend
 
-on: push
+on: pull_request
 
 jobs:
   black:
@@ -12,7 +12,10 @@ jobs:
       with:
         python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run black check
@@ -26,7 +29,10 @@ jobs:
       with:
         python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run flake8 check
@@ -40,7 +46,10 @@ jobs:
       with:
         python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run mypy check
@@ -69,7 +78,10 @@ jobs:
       with:
         python-version: "3.11.4"
     - name: Install deps
-      uses: knowsuchagency/poetry-install@v1
+      run: |
+        pip install -U pip
+        pip install poetry==1.4.2
+        poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run pytest check

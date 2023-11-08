@@ -102,6 +102,24 @@ class Settings(BaseSettings):
             path=path,
         )
 
+    @property
+    def celery_backend(self) -> str:
+        """
+        Celery backend URL.
+
+        :return: celery backend URL.
+        """
+        return f"redis://{self.redis_host}:{self.redis_port}/0"
+
+    @property
+    def celery_broker(self) -> str:
+        """
+        Celery broker URL.
+
+        :return: celery broker URL.
+        """
+        return f"redis://{self.redis_host}:{self.redis_port}/0"
+
     class Config:
         env_file = ".env"
         env_prefix = "MYFI_BACKEND_"

@@ -82,11 +82,51 @@ services:
       MYFI_BACKEND_DB_PASS: myfi_backend
       MYFI_BACKEND_DB_BASE: myfi_backend
       MYFI_BACKEND_REDIS_HOST: myfi_backend-redis
-      #TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["myfi_backend-kafka:9092"]'
+      MYFI_BACKEND_CELERY_BROKER_URL: redis://myfi_backend-redis:6379/0
+      MYFI_BACKEND_CELERY_RESULT_BACKEND: redis://myfi_backend-redis:6379/0
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
+    command: celery -A myfi_backend.celery worker --loglevel=info --concurrency=4
+    volumes:
+    - myfi_backend-worker-data:/var/lib/worker/data
+    environment:
+      MYFI_BACKEND_CELERY_BROKER_URL: redis://myfi_backend-redis:6379/0
+      MYFI_BACKEND_CELERY_RESULT_BACKEND: redis://myfi_backend-redis:6379/0
+    depends_on:
+    - redis
+
+  beat:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
+    command: celery -A myfi_backend.celery beat --loglevel=info
+    environment:
+      MYFI_BACKEND_CELERY_BROKER_URL: redis://myfi_backend-redis:6379/0
+      MYFI_BACKEND_CELERY_RESULT_BACKEND: redis://myfi_backend-redis:6379/0
+    depends_on:
+    - redis
+
+  flower:
+    image: mher/flower:2.0.1
+    command: celery --broker=redis://myfi_backend-redis:6379/0 flower --port=5555
+    ports:
+    - "5555:5555"
+    depends_on:
+    - worker
+    - redis
 
 volumes:
   myfi_backend-db-data:
     name: myfi_backend-db-data
+  myfi_backend-worker-data:
+    name: myfi_backend-worker-data
 
 networks:
   # Network for traefik.

@@ -1,4 +1,5 @@
 import enum
+import os
 from pathlib import Path
 from tempfile import gettempdir
 from typing import Optional
@@ -41,19 +42,27 @@ class Settings(BaseSettings):
     log_level: LogLevel = LogLevel.INFO
 
     # Variables for the database
-    db_host: str = "localhost"
-    db_port: int = 5432
-    db_user: str = "myfi_backend"
-    db_pass: str = "myfi_backend"
-    db_base: str = "myfi_backend"
+    db_host: str = os.getenv("MYFI_BACKEND_DB_HOST", default="myfi_backend-db")
+    db_port: int = int(os.getenv("MYFI_BACKEND_DB_PORT", default="5432"))
+    db_user: str = os.getenv("MYFI_BACKEND_DB_USER", default="myfi_backend")
+    db_pass: str = os.getenv("MYFI_BACKEND_DB_PASS", default="myfi_backend")
+    db_base: str = os.getenv("MYFI_BACKEND_DB_BASE", default="myfi_backend")
     db_echo: bool = False
 
     # Variables for Redis
-    redis_host: str = "myfi_backend-redis"
-    redis_port: int = 6379
-    redis_user: Optional[str] = None
-    redis_pass: Optional[str] = None
-    redis_base: Optional[int] = None
+    redis_host: str = os.getenv("MYFI_BACKEND_REDIS_HOST", default="myfi_backend-redis")
+    redis_port: int = int(os.getenv("MYFI_BACKEND_REDIS_PORT", default="6379"))
+    redis_user: Optional[str] = os.getenv("MYFI_BACKEND_REDIS_USER", default=None)
+    redis_pass: Optional[str] = os.getenv("MYFI_BACKEND_REDIS_PASS", default=None)
+    redis_base: Optional[str] = os.getenv("MYFI_BACKEND_REDIS_BASE", default=None)
+    celery_backend = os.getenv(
+        "MYFI_BACKEND_CELERY_RESULT_BACKEND",
+        default="redis://myfi_backend-redis:6379/0",
+    )
+    celery_broker = os.getenv(
+        "MYFI_BACKEND_CELERY_BROKER_URL",
+        default="redis://myfi_backend-redis:6379/0",
+    )
 
     # This variable is used to define
     # multiproc_dir. It's required for [uvi|guni]corn projects.

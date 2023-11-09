@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import patch
 
 import pytest
 from fastapi import FastAPI
@@ -41,9 +42,14 @@ async def test_getting(
     test_name = uuid.uuid4().hex
     await dao.create_dummy_model(name=test_name)
     url = fastapi_app.url_path_for("get_dummy_models")
-    response = await client.get(url)
-    dummies = response.json()
+    with patch("myfi_backend.celery.tasks.celery.send_task") as mock_send_task:
+        response = await client.get(url)
+        dummies = response.json()
 
-    assert response.status_code == status.HTTP_200_OK
-    assert len(dummies) == 1
-    assert dummies[0]["name"] == test_name
+        assert response.status_code == status.HTTP_200_OK
+        assert len(dummies) == 1
+        assert dummies[0]["name"] == test_name
+        mock_send_task.assert_called_once()
+        call_args = mock_send_task.call_args
+        args, _ = call_args.args, call_args.kwargs
+        assert args[0] == "dummy_task"

@@ -128,6 +128,10 @@ By default it runs:
 * isort (sorts imports in all files);
 * flake8 (spots possible bugs);
 
+To run pre-commit checks simply run inside the shell:
+```bash
+pre-commit run --all-files
+```
 
 You can read more about pre-commit here: https://pre-commit.com/
 
@@ -207,4 +211,16 @@ docker run -p "5432:5432" -e "POSTGRES_PASSWORD=myfi_backend" -e "POSTGRES_USER=
 2. Run the pytest.
 ```bash
 pytest -vv .
+```
+
+
+## Running github actions locally
+
+Read this article on how to run and test github actions locally.
+
+https://github.com/nektos/act
+
+e.g. to check the github action for pull_request
+```bash
+act pull_request --container-architecture linux/amd64
 ```

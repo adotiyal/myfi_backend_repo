@@ -70,14 +70,6 @@ jobs:
           --health-retries=5
         ports:
         - 5432:5432
-      myfi_backend-redis:
-        image: redis:6.2.13-alpine3.18
-        env:
-          ALLOW_EMPTY_PASSWORD: "yes"
-        options: >-
-          --health-cmd="redis-cli ping"
-        ports:
-        - 6379:6379
 
     steps:
     - uses: actions/checkout@v2
@@ -96,4 +88,4 @@ jobs:
       run: poetry run pytest -vv --cov="myfi_backend" .
       env:
         MYFI_BACKEND_HOST: "0.0.0.0"
-        MYFI_BACKEND_DB_HOST: myfi_backend-db
+        MYFI_BACKEND_DB_HOST: localhost

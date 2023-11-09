@@ -82,9 +82,8 @@ services:
       MYFI_BACKEND_DB_PASS: myfi_backend
       MYFI_BACKEND_DB_BASE: myfi_backend
       MYFI_BACKEND_REDIS_HOST: myfi_backend-redis
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-      #TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["myfi_backend-kafka:9092"]'
+      MYFI_BACKEND_CELERY_BROKER_URL: redis://myfi_backend-redis:6379/0
+      MYFI_BACKEND_CELERY_RESULT_BACKEND: redis://myfi_backend-redis:6379/0
 
   worker:
     build:
@@ -96,8 +95,8 @@ services:
     volumes:
     - myfi_backend-worker-data:/var/lib/worker/data
     environment:
-    - CELERY_BROKER_URL=redis://redis:6379/0
-    - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      MYFI_BACKEND_CELERY_BROKER_URL: redis://myfi_backend-redis:6379/0
+      MYFI_BACKEND_CELERY_RESULT_BACKEND: redis://myfi_backend-redis:6379/0
     depends_on:
     - redis
 
@@ -109,14 +108,14 @@ services:
     image: myfi_backend:${MYFI_BACKEND_VERSION:-latest}
     command: celery -A myfi_backend.celery beat --loglevel=info
     environment:
-    - CELERY_BROKER_URL=redis://redis:6379/0
-    - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      MYFI_BACKEND_CELERY_BROKER_URL: redis://myfi_backend-redis:6379/0
+      MYFI_BACKEND_CELERY_RESULT_BACKEND: redis://myfi_backend-redis:6379/0
     depends_on:
     - redis
 
   flower:
     image: mher/flower:2.0.1
-    command: celery --broker=redis://redis:6379/0 flower --port=5555
+    command: celery --broker=redis://myfi_backend-redis:6379/0 flower --port=5555
     ports:
     - "5555:5555"
     depends_on:

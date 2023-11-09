@@ -82,6 +82,8 @@ services:
       MYFI_BACKEND_DB_PASS: myfi_backend
       MYFI_BACKEND_DB_BASE: myfi_backend
       MYFI_BACKEND_REDIS_HOST: myfi_backend-redis
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
       #TESTKAFKA_KAFKA_BOOTSTRAP_SERVERS: '["myfi_backend-kafka:9092"]'
 
   worker:

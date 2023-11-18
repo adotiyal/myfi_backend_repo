@@ -12,4 +12,4 @@ services:
     - .:/app/src/
     environment:
       # Enables autoreload.
-      MYFI_BACKEND_RELOAD: "True"
+      FASTAPI_BACKEND_RELOAD: "True"

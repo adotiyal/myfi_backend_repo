@@ -1,6 +1,6 @@
 # fastapi_backend
 
-This project was generated using fastapi_template.
+Fastapi boilerplate code to start your project. It has sample Api implementations with swagger documentations, celery tasks, worker and scheduler supported by Redis as a backend, docker local setup to start all services, pytest based tests, GitHub actions for CI and Kubernetes deployment scripts.
 
 ## Poetry
 

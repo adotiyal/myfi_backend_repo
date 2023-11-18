@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: myfi-backend
-  name: myfi-backend-app
+  namespace: fastapi-backend
+  name: fastapi-backend-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: myfi-backend-app
+      app: fastapi-backend-app
   template:
     metadata:
       labels:
-        app: myfi-backend-app
+        app: fastapi-backend-app
     spec:
       containers:
       - name: app
-        image: myfi_backend:latest
+        image: fastapi_backend:latest
         readinessProbe:
           httpGet:
             path: /api/health
@@ -24,14 +24,14 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
         env:
-        - name: MYFI_BACKEND_HOST
+        - name: FASTAPI_BACKEND_HOST
           value: "0.0.0.0"
-        - name: MYFI_BACKEND_WORKERS_COUNT
+        - name: FASTAPI_BACKEND_WORKERS_COUNT
           value: "10"
-        - name: MYFI_BACKEND_DB_HOST
-          value: "myfi-backend-db-service"
-        - name: MYFI_BACKEND_REDIS_HOST
-          value: "myfi-backend-redis-service"
+        - name: FASTAPI_BACKEND_DB_HOST
+          value: "fastapi-backend-db-service"
+        - name: FASTAPI_BACKEND_REDIS_HOST
+          value: "fastapi-backend-redis-service"
         resources:
           limits:
             memory: "200Mi"
@@ -43,11 +43,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: myfi-backend
-  name: myfi-backend-app-service
+  namespace: fastapi-backend
+  name: fastapi-backend-app-service
 spec:
   selector:
-    app: myfi-backend-app
+    app: fastapi-backend-app
   ports:
   - protocol: TCP
     port: 80
@@ -58,20 +58,20 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: myfi-backend-app
-  namespace: myfi-backend
+  name: fastapi-backend-app
+  namespace: fastapi-backend
   labels:
-    name: myfi-backend-app
+    name: fastapi-backend-app
 spec:
   rules:
-  - host: myfi-backend.local
+  - host: fastapi-backend.local
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: myfi-backend-app-service
+            name: fastapi-backend-app-service
             port:
               name: api-port
 

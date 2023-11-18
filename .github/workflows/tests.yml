@@ -1,4 +1,4 @@
-name: Testing myfi_backend
+name: Testing fastapi_backend
 
 on: pull_request
 
@@ -57,12 +57,12 @@ jobs:
   pytest:
     runs-on: ubuntu-latest
     services:
-      myfi_backend-db:
+      fastapi_backend-db:
         image: postgres:13.8-bullseye
         env:
-          POSTGRES_PASSWORD: myfi_backend
-          POSTGRES_USER: myfi_backend
-          POSTGRES_DB: myfi_backend
+          POSTGRES_PASSWORD: fastapi_backend
+          POSTGRES_USER: fastapi_backend
+          POSTGRES_DB: fastapi_backend
         options: >-
           --health-cmd="pg_isready"
           --health-interval=10s
@@ -85,7 +85,7 @@ jobs:
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run pytest check
-      run: poetry run pytest -vv --cov="myfi_backend" .
+      run: poetry run pytest -vv --cov="fastapi_backend" .
       env:
-        MYFI_BACKEND_HOST: "0.0.0.0"
-        MYFI_BACKEND_DB_HOST: localhost
+        FASTAPI_BACKEND_HOST: "0.0.0.0"
+        FASTAPI_BACKEND_DB_HOST: localhost

@@ -25,7 +25,7 @@ RUN apt-get purge -y \
 COPY . /app/src/
 RUN poetry install --only main
 
-CMD ["/usr/local/bin/python", "-m", "myfi_backend"]
+CMD ["/usr/local/bin/python", "-m", "fastapi_backend"]
 
 FROM prod as dev
 

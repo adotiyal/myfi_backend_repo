@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "myfi_backend"
+name = "fastapi_backend"
 version = "0.1.0"
 description = ""
 authors = [
@@ -55,7 +55,7 @@ httpx = "^0.23.3"
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-src_paths = ["myfi_backend",]
+src_paths = ["fastapi_backend",]
 
 [tool.mypy]
 strict = true
@@ -85,13 +85,13 @@ filterwarnings = [
     "ignore:.*unclosed.*:ResourceWarning",
 ]
 env = [
-    "MYFI_BACKEND_ENVIRONMENT=pytest",
-    "MYFI_BACKEND_DB_BASE=myfi_backend_test",
-    "MYFI_BACKEND_SENTRY_DSN=",
+    "FASTAPI_BACKEND_ENVIRONMENT=pytest",
+    "FASTAPI_BACKEND_DB_BASE=fastapi_backend_test",
+    "FASTAPI_BACKEND_SENTRY_DSN=",
 ]
 
 [fastapi-template.options]
-project_name = "myfi_backend"
+project_name = "fastapi_backend"
 api_type = "rest"
 enable_redis = "True"
 enable_rmq = "None"
@@ -99,7 +99,7 @@ ci_type = "github"
 enable_migrations = "True"
 enable_taskiq = "None"
 enable_kube = "True"
-kube_name = "myfi-backend"
+kube_name = "fastapi-backend"
 enable_routers = "True"
 enable_kafka = "True"
 enable_loguru = "True"

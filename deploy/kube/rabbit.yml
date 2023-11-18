@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: "myfi-backend"
-  name: "myfi-backend-rmq"
+  namespace: "fastapi-backend"
+  name: "fastapi-backend-rmq"
 spec:
   selector:
     matchLabels:
-      app: "myfi-backend-rmq"
+      app: "fastapi-backend-rmq"
   template:
     metadata:
       labels:
-        app: "myfi-backend-rmq"
+        app: "fastapi-backend-rmq"
     spec:
       containers:
       - name: rabbit
@@ -40,11 +40,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: "myfi-backend"
-  name: "myfi-backend-rmq-service"
+  namespace: "fastapi-backend"
+  name: "fastapi-backend-rmq-service"
 spec:
   selector:
-    app: "myfi-backend-rmq"
+    app: "fastapi-backend-rmq"
   ports:
   - port: 5672
     targetPort: amqp

@@ -1,4 +1,4 @@
-# myfi_backend
+# fastapi_backend
 
 This project was generated using fastapi_template.
 
@@ -11,7 +11,7 @@ To run the project use this set of commands:
 
 ```bash
 poetry install
-poetry run python -m myfi_backend
+poetry run python -m fastapi_backend
 ```
 
 This will start the server on the configured host.
@@ -52,8 +52,8 @@ docker-compose -f deploy/docker-compose.yml --project-directory . build
 ## Project structure
 
 ```bash
-$ tree "myfi_backend"
-myfi_backend
+$ tree "fastapi_backend"
+fastapi_backend
 ├── conftest.py  # Fixtures for all tests.
 ├── db  # module contains db configurations
 │   ├── dao  # Data Access Objects. Contains different classes to interact with database.
@@ -77,18 +77,18 @@ This application can be configured with environment variables.
 You can create `.env` file in the root directory and place all
 environment variables here.
 
-All environment variables should start with "MYFI_BACKEND_" prefix.
+All environment variables should start with "FASTAPI_BACKEND_" prefix.
 
-For example if you see in your "myfi_backend/settings.py" a variable named like
-`random_parameter`, you should provide the "MYFI_BACKEND_RANDOM_PARAMETER"
+For example if you see in your "fastapi_backend/settings.py" a variable named like
+`random_parameter`, you should provide the "FASTAPI_BACKEND_RANDOM_PARAMETER"
 variable to configure the value. This behaviour can be changed by overriding `env_prefix` property
-in `myfi_backend.settings.Settings.Config`.
+in `fastapi_backend.settings.Settings.Config`.
 
 An example of .env file:
 ```bash
-MYFI_BACKEND_RELOAD="True"
-MYFI_BACKEND_PORT="8000"
-MYFI_BACKEND_ENVIRONMENT="dev"
+FASTAPI_BACKEND_RELOAD="True"
+FASTAPI_BACKEND_PORT="8000"
+FASTAPI_BACKEND_ENVIRONMENT="dev"
 ```
 
 You can read more about BaseSettings class here: https://pydantic-docs.helpmanual.io/usage/settings/
@@ -148,7 +148,7 @@ If you haven't pushed to docker registry yet, you can build image locally.
 
 ```bash
 docker-compose -f deploy/docker-compose.yml --project-directory . build
-docker save --output myfi_backend.tar myfi_backend:latest
+docker save --output fastapi_backend.tar fastapi_backend:latest
 ```
 
 ## Migrations
@@ -204,7 +204,7 @@ For running tests on your local machine.
 
 I prefer doing it with docker:
 ```
-docker run -p "5432:5432" -e "POSTGRES_PASSWORD=myfi_backend" -e "POSTGRES_USER=myfi_backend" -e "POSTGRES_DB=myfi_backend" postgres:13.8-bullseye
+docker run -p "5432:5432" -e "POSTGRES_PASSWORD=fastapi_backend" -e "POSTGRES_USER=fastapi_backend" -e "POSTGRES_DB=fastapi_backend" postgres:13.8-bullseye
 ```
 
 
